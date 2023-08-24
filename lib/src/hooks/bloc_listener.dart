@@ -3,26 +3,22 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'bloc.dart';
 
-typedef Listener<B extends BlocBase<S>, S extends Object?> = void Function(B bloc, S state);
+typedef Listener<S extends Object?> = void Function(S state);
 
-typedef ListenWhenCondition<S> = bool Function(S previous, S current);
+typedef ListenWhenCondition<S> = bool Function(S? previous, S current);
 bool alwaysListenCondition(_, __) => true;
 
 void useBlocListener<B extends BlocBase<S>, S extends Object?>(
-  Listener<B, S> listener, {
+  Listener<S> listener, {
   ListenWhenCondition<S> listenWhen = alwaysListenCondition,
+  List<Object?> keys = const [],
 }) {
   final bloc = useBloc<B>();
   final previousStateRef = useRef<S?>(null);
 
   useEffect(() {
     final filteredStream = bloc.stream.where((current) {
-      if (previousStateRef.value == null) {
-        previousStateRef.value = current;
-        return true;
-      }
-
-      if (listenWhen(previousStateRef.value as S, current)) {
+      if (listenWhen(previousStateRef.value, current)) {
         previousStateRef.value = current;
         return true;
       }
@@ -30,7 +26,7 @@ void useBlocListener<B extends BlocBase<S>, S extends Object?>(
       previousStateRef.value = current;
       return false;
     });
-    final subscription = filteredStream.listen((current) => listener(bloc, current));
+    final subscription = filteredStream.listen((current) => listener(current));
     return subscription.cancel;
-  }, []);
+  }, keys);
 }

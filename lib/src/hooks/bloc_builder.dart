@@ -3,22 +3,17 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'bloc.dart';
 
-typedef BuildWhenCondition<B, S> = bool Function(S previous, S current, B bloc);
-bool alwaysBuildCondition(_, __, ___) => true;
+typedef BuildWhenCondition<S extends Object?> = bool Function(S? previous, S current);
+bool alwaysBuildCondition(_, __) => true;
 
 S useBlocBuilder<B extends BlocBase<S>, S extends Object?>({
-  BuildWhenCondition<B, S> buildWhen = alwaysBuildCondition,
+  BuildWhenCondition<S> buildWhen = alwaysBuildCondition,
 }) {
   final bloc = useBloc<B>();
   final previousStateRef = useRef<S?>(null);
 
   final stateStream = bloc.stream.where((current) {
-    if (previousStateRef.value == null) {
-      previousStateRef.value = current;
-      return true;
-    }
-
-    if (buildWhen(previousStateRef.value as S, current, bloc)) {
+    if (buildWhen(previousStateRef.value, current)) {
       previousStateRef.value = current;
       return true;
     }

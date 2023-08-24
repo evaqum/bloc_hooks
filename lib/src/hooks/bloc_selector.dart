@@ -1,18 +1,19 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc.dart';
 import 'bloc_builder.dart';
 
-typedef Selector<B extends BlocBase<S>, S extends Object?, R> = R Function(S state, B bloc);
+typedef Selector<S extends Object?, R> = R Function(S state);
 
-R useBlocSelector<B extends BlocBase<S>, S extends Object?, R>(Selector<B, S, R> selector) {
-  final S state = useBlocBuilder(buildWhen: (S previous, S current, B bloc) {
+R useBlocSelector<B extends BlocBase<S>, S extends Object?, R>(Selector<S, R> select) {
+  final state = useBlocBuilder<B, S>(buildWhen: (previous, current) {
+    if (previous == null) return true;
+
     return !const DeepCollectionEquality().equals(
-      selector(previous, bloc),
-      selector(current, bloc),
+      select(previous),
+      select(current),
     );
   });
 
-  return selector(state, useBloc());
+  return select(state);
 }
