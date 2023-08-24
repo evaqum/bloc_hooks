@@ -1,3 +1,4 @@
+import 'package:bloc_hooks/src/utils/infer_bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -5,7 +6,10 @@ import 'bloc_builder.dart';
 
 typedef Selector<S extends Object?, R> = R Function(S state);
 
-R useBlocSelector<B extends BlocBase<S>, S extends Object?, R>(Selector<S, R> select) {
+R useBlocSelector<B extends BlocBase<S>, S extends Object?, R>(
+  Selector<S, R> select, {
+  InferBlocTypeGetter<B>? inferBloc,
+}) {
   final state = useBlocBuilder<B, S>(buildWhen: (previous, current) {
     if (previous == null) return true;
 

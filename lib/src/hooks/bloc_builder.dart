@@ -1,13 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'bloc.dart';
-
-typedef BuildWhenCondition<S extends Object?> = bool Function(S? previous, S current);
-bool alwaysBuildCondition(_, __) => true;
+import '../../bloc_hooks.dart';
 
 S useBlocBuilder<B extends BlocBase<S>, S extends Object?>({
-  BuildWhenCondition<S> buildWhen = alwaysBuildCondition,
+  BlocHookCondition<S> buildWhen = alwaysActCondition,
+  InferBlocTypeGetter<B>? inferBloc,
 }) {
   final bloc = useBloc<B>();
   final previousStateRef = useRef<S?>(null);
