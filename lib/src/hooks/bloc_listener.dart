@@ -13,7 +13,8 @@ void useBlocListener<B extends BlocBase<S>, S extends Object?>(
   InferBlocTypeGetter<B>? inferBloc,
 }) {
   final bloc = useBloc<B>();
-  final previousStateRef = useRef<S?>(null);
+  final currentState = bloc.state;
+  final previousStateRef = useRef<S>(currentState);
 
   useEffect(() {
     final filteredStream = bloc.stream.where((current) {

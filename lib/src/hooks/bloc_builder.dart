@@ -8,7 +8,8 @@ S useBlocBuilder<B extends BlocBase<S>, S extends Object?>({
   InferBlocTypeGetter<B>? inferBloc,
 }) {
   final bloc = useBloc<B>();
-  final previousStateRef = useRef<S?>(null);
+  final currentState = bloc.state;
+  final previousStateRef = useRef<S>(currentState);
 
   final stateStream = bloc.stream.where((current) {
     if (buildWhen(previousStateRef.value, current)) {
