@@ -8,6 +8,13 @@ S useBlocConsumer<B extends BlocBase<S>, S extends Object?>(
   BlocHookCondition<S> buildWhen = alwaysActCondition,
   InferBlocTypeGetter<B>? inferBloc,
 }) {
-  useBlocListener<B, S>(listener, listenWhen: listenWhen);
-  return useBlocBuilder<B, S>(buildWhen: buildWhen);
+  return useBlocBuilder<B, S>(
+    buildWhen: (S previous, S current) {
+      if (listenWhen(previous, current)) {
+        listener(current);
+      }
+
+      return buildWhen(previous, current);
+    },
+  );
 }
