@@ -1,24 +1,21 @@
-import 'package:bloc_hooks/src/conditions.dart';
-import 'package:bloc_hooks/src/utils/infer_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'bloc.dart';
+import '../../bloc_hooks.dart';
 
-typedef Listener<S extends Object?> = void Function(S state);
+typedef Listener<TBloc extends BlocBase<TState>, TState extends Object?> = void Function(TBloc bloc, TState state);
 
-void useBlocListener<B extends BlocBase<S>, S extends Object?>(
-  Listener<S> listener, {
-  BlocHookCondition<S> listenWhen = alwaysActCondition,
-  InferBlocTypeGetter<B>? inferBloc,
+void useBlocListener<TBloc extends BlocBase<TState>, TState extends Object?>(
+  Listener<TBloc, TState> listener, {
+  BlocHookCondition<TState> ?listenWhen ,
 }) {
-  final bloc = useBloc<B>();
+  final bloc = useBloc<TBloc>();
   final currentState = bloc.state;
-  final previousStateRef = useRef<S>(currentState);
+  final previousStateRef = useRef<TState>(currentState);
 
   useEffect(() {
     final filteredStream = bloc.stream.where((current) {
-      if (listenWhen(previousStateRef.value, current)) {
+      if (listenWhen?.call(previousStateRef.value, current) ?? true) {
         previousStateRef.value = current;
         return true;
       }
@@ -26,7 +23,7 @@ void useBlocListener<B extends BlocBase<S>, S extends Object?>(
       previousStateRef.value = current;
       return false;
     });
-    final subscription = filteredStream.listen((current) => listener(current));
+    final subscription = filteredStream.listen((current) => listener(bloc, current));
     return subscription.cancel;
   }, []);
 }

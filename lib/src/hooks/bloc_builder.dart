@@ -3,16 +3,15 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../bloc_hooks.dart';
 
-S useBlocBuilder<B extends BlocBase<S>, S extends Object?>({
-  BlocHookCondition<S> buildWhen = alwaysActCondition,
-  InferBlocTypeGetter<B>? inferBloc,
+TState useBlocBuilder<TBloc extends BlocBase<TState>, TState extends Object?>({
+  BlocHookCondition<TState> ?buildWhen ,
 }) {
-  final bloc = useBloc<B>();
+  final bloc = useBloc<TBloc>();
   final currentState = bloc.state;
-  final previousStateRef = useRef<S>(currentState);
+  final previousStateRef = useRef<TState>(currentState);
 
   final stateStream = bloc.stream.where((current) {
-    if (buildWhen(previousStateRef.value, current)) {
+    if (buildWhen?.call(previousStateRef.value, current) ?? true) {
       previousStateRef.value = current;
       return true;
     }

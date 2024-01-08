@@ -1,21 +1,23 @@
 import 'package:bloc_hooks/bloc_hooks.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-typedef Selector<S extends Object?, R> = R Function(S state);
+typedef Selector<TBloc extends BlocBase<TState>, TState extends Object?, TResult> = TResult Function(TBloc bloc, TState state);
 
-R useBlocSelector<B extends BlocBase<S>, S extends Object?, R>(
-  Selector<S, R> select, {
-  InferBlocTypeGetter<B>? inferBloc,
-  BlocHookCondition<R> buildWhen = alwaysActCondition,
+TResult useBlocSelector<TBloc extends BlocBase<TState>, TState extends Object?, TResult>(
+  Selector<TBloc, TState, TResult> select, {
+  BlocHookCondition<TResult>? buildWhen,
 }) {
-  final state = useBlocBuilder<B, S>(buildWhen: (previous, current) {
+  final bloc = useBloc<TBloc>();
+
+  final state = useBlocBuilder<TBloc, TState>(buildWhen: (previous, current) {
     if (previous == null) return true;
 
-    final prev = select(previous);
-    final curr = select(current);
+    final prev = select(bloc, previous);
+    final curr = select(bloc, current);
 
-    return prev != curr && buildWhen(prev, curr);
+    late final willBuild = buildWhen?.call(prev, curr) ?? true;
+    return prev != curr && willBuild;
   });
 
-  return select(state);
+  return select(bloc, state);
 }

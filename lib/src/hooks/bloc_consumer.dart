@@ -2,19 +2,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc_hooks.dart';
 
-S useBlocConsumer<B extends BlocBase<S>, S extends Object?>(
-  Listener<S> listener, {
-  BlocHookCondition<S> listenWhen = alwaysActCondition,
-  BlocHookCondition<S> buildWhen = alwaysActCondition,
-  InferBlocTypeGetter<B>? inferBloc,
+TState useBlocConsumer<TBloc extends BlocBase<TState>, TState extends Object?>(
+  Listener<TBloc, TState> listener, {
+  BlocHookCondition<TState> ?listenWhen ,
+  BlocHookCondition<TState> ?buildWhen,
 }) {
-  return useBlocBuilder<B, S>(
-    buildWhen: (S previous, S current) {
-      if (listenWhen(previous, current)) {
-        listener(current);
+  final bloc = useBloc<TBloc>();
+
+  return useBlocBuilder<TBloc, TState>(
+    buildWhen: (previous, current) {
+      if (listenWhen?.call(previous, current) ?? true) {
+        listener(bloc, current);
       }
 
-      return buildWhen(previous, current);
+      return buildWhen?.call(previous, current) ?? true;
     },
   );
 }
