@@ -54,7 +54,7 @@ Widget build(BuildContext context) {
 
 ```dart
 Widget build(BuildContext context) {
-  useBlocListener<CounterBloc, int>((count) {
+  useBlocListener((CounterBloc _, int count) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('New counter value: $count')),
     );
@@ -72,7 +72,7 @@ Widget build(BuildContext context) {
 
 ```dart
 Widget build(BuildContext context) {
-  final count = useBlocConsumer<CounterBloc, int>((count) {
+  final count = useBlocConsumer((CounterBloc _, int count) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('New counter value: $count')),
     );
@@ -90,8 +90,8 @@ Widget build(BuildContext context) {
 
 ```dart
 Widget build(BuildContext context) {
-  final (isAuthenticated, user) = useBlocSelector<AuthBloc, AuthState, (bool, User?)>(
-    (state) => (state.isAuthenticated, state.user),
+  final (isAuthenticated, user) = useBlocSelector(
+    (AuthBloc _, AuthState state) => (state.isAuthenticated, state.user),
   );
 
   if (!isAuthenticated || user == null) {
@@ -100,4 +100,4 @@ Widget build(BuildContext context) {
 
   return HomeScreen(user: user);
 }
-``` 
+```
