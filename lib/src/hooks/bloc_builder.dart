@@ -27,7 +27,7 @@ import '../../bloc_hooks.dart';
 /// }
 /// ```
 TState useBlocBuilder<TBloc extends BlocBase<TState>, TState extends Object?>({
-  BlocHookCondition<TState> ?buildWhen ,
+  BlocHookCondition<TState>? buildWhen,
 }) {
   final bloc = useBloc<TBloc>();
   final currentState = bloc.state;

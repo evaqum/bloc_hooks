@@ -8,8 +8,8 @@ import '../../bloc_hooks.dart';
 /// allowing to update the UI in response to changes.
 TState useBlocConsumer<TBloc extends BlocBase<TState>, TState extends Object?>(
   Listener<TBloc, TState> listener, {
-  BlocHookCondition<TState> ?listenWhen ,
-  BlocHookCondition<TState> ?buildWhen,
+  BlocHookCondition<TState>? listenWhen,
+  BlocHookCondition<TState>? buildWhen,
 }) {
   final bloc = useBloc<TBloc>();
 

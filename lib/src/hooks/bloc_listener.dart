@@ -21,7 +21,7 @@ typedef Listener<TBloc extends BlocBase<TState>, TState extends Object?> = void 
 /// ```
 void useBlocListener<TBloc extends BlocBase<TState>, TState extends Object?>(
   Listener<TBloc, TState> listener, {
-  BlocHookCondition<TState> ?listenWhen ,
+  BlocHookCondition<TState>? listenWhen,
 }) {
   final bloc = useBloc<TBloc>();
   final currentState = bloc.state;
