@@ -10,6 +10,8 @@ typedef Listener<TBloc extends BlocBase<TState>, TState extends Object?> = void 
 /// It should be used to do something when state changes (e.g. show a dialog, navigate to other page).
 /// To update the UI when state changes, use [useBlocBuilder].
 ///
+/// Set [includeCurrent] to [true] to always receive current bloc state when the widget mounts.
+///
 /// ```dart
 /// Widget build(BuildContext context) {
 ///   useBlocListener<CounterBloc, int>((_, count) {
@@ -22,12 +24,17 @@ typedef Listener<TBloc extends BlocBase<TState>, TState extends Object?> = void 
 void useBlocListener<TBloc extends BlocBase<TState>, TState extends Object?>(
   Listener<TBloc, TState> listener, {
   BlocHookCondition<TState>? listenWhen,
+  bool includeCurrent = false,
 }) {
   final bloc = useBloc<TBloc>();
   final currentState = bloc.state;
   final previousStateRef = useRef<TState>(currentState);
 
   useEffect(() {
+    if (includeCurrent) {
+      listener(bloc, currentState);
+    }
+
     final filteredStream = bloc.stream.where((current) {
       if (listenWhen?.call(previousStateRef.value, current) ?? true) {
         previousStateRef.value = current;
